@@ -19,7 +19,6 @@ Options:
 from aclinks import aclinks as acl
 from pprint import pprint
 from docopt import docopt 
-import requests
  
 
 if __name__ == "__main__":
