@@ -50,12 +50,13 @@ def get_down_links(file, links, __verbose, __exit):
                     l[1][2]
                 )
             )
-            __verbose and print("At line", l[0] , ":" , l[1][2], ":", r.reason, "(", r.status_code, ")" )
+            __verbose and print("At line", l[0] , ":" , l[1][2], ":", r.reason, "(", r.status_code, ")")
             if __exit:
                 r.raise_for_status()
     return down
 
 
+# For next version
 def remove_down_links(file, line_numbers):
     """In a file, delete the lines at line number in given list"""
     is_skipped = False

@@ -1,5 +1,5 @@
-files = awesome_check_link test *.py
-
+files=awesome_check_link test *.py
+MODULE=awesome_check_link
 test:
 	pytest -s -v test/test_*.py --doctest-modules --cov aclinks --cov-config=.coveragerc --cov-report term-missing
 
@@ -17,10 +17,22 @@ report:
 
 build: aclinks
 	rm -rf dist
-	python setup.py sdist bdist_wheel
+	python3 setup.py sdist bdist_wheel --bdist-dir ~/temp/bdistwheel
 
 publish:
 	make build
-	twine upload --config-file ~/.pypirc -r pypi dist/* 
+	twine upload --config-file ~/.pypirc -r pypi dist/*
 
-.PHONY: test
+clean:
+	rm -rf __pycache__
+	rm -rf tests/__pycache__
+	rm -rf .pytest_cache
+	rm -rf coverage.xml .coverage
+	rm -rf .vscode
+
+fclean: clean
+	rm -rf build/
+	rm -rf dist/
+	rm -rf ${MODULE}.egg-info
+
+.PHONY: clean fclean test coverage

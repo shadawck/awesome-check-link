@@ -1,7 +1,7 @@
 import os
 from setuptools import setup
 
-from awesome_check_link import __version__
+from aclinks import __version__
 
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
@@ -19,10 +19,10 @@ settings = dict(
     packages = ['aclinks'],
     version = __version__,
     author = 'shadawck',
-    author_email = '',
-    description = ('Check if links in md file and more particuraly in awesome-list are down or not'),
+    author_email = 'hug211mire@gmail.com',
+    description = ('Check if links in md file and more particuraly in awesome-list are down or not.'),
     license = 'MIT',
-    keywords = 'awesome-check-link',
+    keywords = 'awesome-check-link, awesome, awesome list, checker, down, link checker',
     url = 'https://github.com/remiflavien1/awesome-check-link',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
@@ -35,6 +35,7 @@ settings = dict(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Awesome List',
         'License :: OSI Approved :: MIT License',
     ]
 )

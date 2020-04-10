@@ -23,9 +23,8 @@ from docopt import docopt
 
 if __name__ == "__main__":
     arguments = docopt(__doc__, version='Awesome check links')
-    print(arguments)
 
-     ########## CLI VAR ##########
+    ########## CLI VAR ##########
 
     __verbose = arguments["--verbose"]
     __down = arguments["--down"]
