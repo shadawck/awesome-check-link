@@ -16,11 +16,11 @@ def read_requirements(filename):
 
 settings = dict(
     name = 'awesome-check-link',
-    packages = ['awesome_check_link'],
+    packages = ['aclinks'],
     version = __version__,
-    author = 'remiflavien1',
+    author = 'shadawck',
     author_email = '',
-    description = ('This is an awesome project!'),
+    description = ('Check if links in md file and more particuraly in awesome-list are down or not'),
     license = 'MIT',
     keywords = 'awesome-check-link',
     url = 'https://github.com/remiflavien1/awesome-check-link',

@@ -1,7 +1,7 @@
 files = awesome_check_link test *.py
 
 test:
-	pytest -s -v test/test_*.py --doctest-modules --cov awesome_check_link --cov-config=.coveragerc --cov-report term-missing
+	pytest -s -v test/test_*.py --doctest-modules --cov aclinks --cov-config=.coveragerc --cov-report term-missing
 
 lint:
 	flake8 $(files)
@@ -15,12 +15,12 @@ install:
 report:
 	codecov
 
-build: awesome_check_link
+build: aclinks
 	rm -rf dist
 	python setup.py sdist bdist_wheel
 
 publish:
 	make build
-	twine upload --config-file ~/.pypirc -r pypi dist/*
+	twine upload --config-file ~/.pypirc -r pypi dist/* 
 
 .PHONY: test

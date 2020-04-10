@@ -20,7 +20,7 @@ import datetime
 # -- Project information -----------------------------------------------------
 
 project = 'awesome-check-link'
-copyright = f'2019-{datetime.date.today().year}, remiflavien1< and contributors'
+copyright = f'2020-{datetime.date.today().year}, remiflavien1< and contributors'
 author = 'remiflavien1 <>'
 
 

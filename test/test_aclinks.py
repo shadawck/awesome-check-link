@@ -1,4 +1,5 @@
-import awesome_check_link
+import aclinks
 
 def test_main():
     pass
+

@@ -1,12 +1,20 @@
 import re 
 import os
 import requests
-from pprint import pprint
-
-file = "../docs/README.md"
 
 
 def extract_links(file):
+    """Extract all links in the md file
+    Args:
+        file (str) : The file to scan 
+    Return:
+        list. List of all extracted links and their line number. 
+        Data Strucure : 
+            [(line_0, matchObject_0) , ... , (line_n, matchObject_n)]
+        
+        For matchOject look at python regex documentation : https://docs.python.org/fr/3.6/library/re.html#re.regex.search
+
+    """
 
     found = []
     pattern = re.compile('\[(.+)\]\(([^ ]+)\)')
@@ -22,11 +30,8 @@ def extract_links(file):
                 )
     return found
 
-
-
-def get_down_links(file, links, __verbose):
+def get_down_links(file, links, __verbose, __exit):
     """
-
     Args: 
         links (list) : List of links and their line number
     
@@ -39,8 +44,15 @@ def get_down_links(file, links, __verbose):
     for l in links :
         r = requests.head(l[1][2])
         if r.status_code != 200:
-            down.append(l[1][2])
-            __verbose and print(l[1][2], ":", r.reason, "(", r.status_code, ")" )
+            down.append(
+                (
+                    l[0],
+                    l[1][2]
+                )
+            )
+            __verbose and print("At line", l[0] , ":" , l[1][2], ":", r.reason, "(", r.status_code, ")" )
+            if __exit:
+                r.raise_for_status()
     return down
 
 
@@ -69,8 +81,20 @@ def remove_down_links(file, line_numbers):
         os.remove(dummy_file)
 
 
-def get_all_status(file, links, __verbose):
+def get_all_status(file, links, __verbose, __exit):
+    """Get status for all links of the md file 
+    Args:
+        file (str) : The file to scan.
+        links (list) : List of links to check for status.
+        __verbose : Add more to output 
+    
+    Return: 
+        list. list of line number, links, and status.
+        Data Strucure : 
+            [(line_0, link_0, status_0) , ... , (line_n, link_n, status_n)]
+        
 
+    """
     link_data = []
 
     for l in links :
@@ -82,10 +106,8 @@ def get_all_status(file, links, __verbose):
                 r.reason
             )
         )
-        __verbose and print(l[1][2], ":", r.reason, "(", r.status_code, ")" )
-
+        __verbose and print("At line", l[0], ":", l[1][2], ":", r.reason, "(", r.status_code, ")" )
+        if __exit:
+            r.raise_for_status()
     return link_data
-
-
-pprint(get_all_status(file, extract_links(file), 1))
 
