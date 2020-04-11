@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# __main__.py
 
 """Awesome Check Links 
 
@@ -16,13 +17,12 @@ Options:
 
 """
 
-from aclinks import aclinks as acl
-from pprint import pprint
+from aclinks import checker
 from docopt import docopt 
  
 
-if __name__ == "__main__":
-    arguments = docopt(__doc__, version='Awesome check links')
+def main():
+    arguments = docopt(__doc__, version='aclinks 0.1.5')
 
     ########## CLI VAR ##########
 
@@ -37,14 +37,16 @@ if __name__ == "__main__":
         print("aclinks take only md file ! ")
         exit()
 
-    links = acl.extract_links(__file)
+    links = checker.extract_links(__file)
     
-
     if __down:
-        down_links = acl.get_down_links(__file, links,__verbose, __exit)        
+        checker.get_down_links(__file, links,__verbose, __exit)        
     
     else : 
-        acl.get_all_status(__file, links,__verbose, __exit)
+        checker.get_all_status(__file, links,__verbose, __exit)
 
+
+if __name__ == "__main__":
+    main()
 
     

@@ -17,6 +17,10 @@ cd awesome-check-link
 python3 setup.py install
 ```
 
+To upgrade ```aclinks```: 
+```sh
+python3 -m pip  install --upgrade awesome-check-link
+```
 
 ## Usage
 ### CLI 

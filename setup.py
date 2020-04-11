@@ -1,7 +1,7 @@
 import os
 from setuptools import setup
-
 from aclinks import __version__
+
 
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
@@ -26,18 +26,21 @@ settings = dict(
     url = 'https://github.com/remiflavien1/awesome-check-link',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
-    python_requires='>=3.7',
     install_requires=read_requirements('requirements.txt'),
     tests_require=read_requirements('test-requirements.txt'),
     classifiers=[
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Topic :: Awesome List',
         'License :: OSI Approved :: MIT License',
-    ]
+    ],
+    entry_points={
+        "console_scripts": [
+            "aclinks=aclinks.__main__:main",
+        ]
+    },
 )
 
 setup(**settings)
+
