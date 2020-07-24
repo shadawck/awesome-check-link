@@ -40,21 +40,37 @@ def get_down_links(file, links, __verbose, __exit):
     
     """
     down = []
-
+    
     for l in links :
-        r = requests.head(l[1][2])
-        if r.status_code != 200:
-            down.append(
-                (
-                    l[0],
-                    l[1][2]
-                )
-            )
-            __verbose and print("At line", l[0] , ":" , l[1][2], ":", r.reason, "(", r.status_code, ")")
-            if __exit:
-                r.raise_for_status()
-    return down
+        try:
+            r = requests.head(l[1][2],allow_redirects=True)
+            if r.status_code != 200:
+                # If test_https return true, we alert the user that the link is not down and need an update, else add to "down" list 
+                if r.status_code == 301 and test_https(l[1][2], __verbose):
+                    __verbose and print("At line", l[0] , ":" , l[1][2], ":", "The site just switched for HTTPS.")
+                    continue # Do not add the link to down list
 
+                down.append(
+                    (
+                        l[0],
+                        l[1][2]
+                    )
+                )
+                __verbose and print("At line", l[0] , ":" , l[1][2], ":", r.reason, "(", r.status_code, ")")
+                if __exit:
+                    r.raise_for_status()
+        except requests.exceptions.ConnectionError:
+            print("At line", l[0], ":", "Connection to :", l[1][2], "reach Timeout.", "Request Timeout ( 408 )")
+            down.append(
+                    (
+                        l[0],
+                        l[1][2]
+                    )
+            )
+        except requests.exceptions.InvalidSchema:
+            print("At line", l[0], ":", "There is a misspelling in the url:", l[1][2])
+
+    return down
 
 # For next version
 def remove_down_links(file, line_numbers):
@@ -81,6 +97,29 @@ def remove_down_links(file, line_numbers):
     else:
         os.remove(dummy_file)
 
+def test_https(link, __verbose):
+    """
+    If you get a 301 header and the url is a HTTP one, the possibility is that the url moved to HTTPS.
+    so we need to check for https. If the updated link with https send a 200 it's ok, we can keep the url and replace with update url
+
+    Args: 
+        link (string): The url which return a "Moved Permanently ( 301 )"
+
+    Return:
+        bool. Return True if the updated HTTPS link return a 200. Else return False.
+    """
+
+    split = link.split(":") 
+    # Useless to continue if the link is already in HTTPS
+    if split[0] == "https": 
+        return False
+    
+    updated_link = "https:" + split[-1]
+    r = requests.head(updated_link)
+    if r.status_code != 200:
+        return False
+    
+    return True
 
 def get_all_status(file, links, __verbose, __exit):
     """Get status for all links of the md file 
@@ -99,16 +138,25 @@ def get_all_status(file, links, __verbose, __exit):
     link_data = []
 
     for l in links :
-        r = requests.head(l[1][2])
-        link_data.append(
-            (
-                l[0],
-                l[1][2],
-                r.reason
+        try:
+            r = requests.head(l[1][2])
+            link_data.append(
+                (
+                    l[0],
+                    l[1][2],
+                    r.reason
+                )
             )
-        )
-        __verbose and print("At line", l[0], ":", l[1][2], ":", r.reason, "(", r.status_code, ")" )
-        if __exit:
-            r.raise_for_status()
+            __verbose and print("At line", l[0], ":", l[1][2], ":", r.reason, "(", r.status_code, ")" )
+            if __exit:
+                r.raise_for_status()
+        except requests.exceptions.ConnectionError:
+            print("At line", l[0], ":", "Connection to :", l[1][2], "reach Timeout.", "Request Timeout ( 408 )")
+            link_data.append(
+                (
+                    l[0],
+                    l[1][2],
+                    408      # 408 Request Timeout
+                )
+            )
     return link_data
-

@@ -22,7 +22,7 @@ from docopt import docopt
  
 
 def main():
-    arguments = docopt(__doc__, version='aclinks 0.1.5')
+    arguments = docopt(__doc__, version='aclinks 0.1.6')
 
     ########## CLI VAR ##########
 
@@ -48,5 +48,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
     
