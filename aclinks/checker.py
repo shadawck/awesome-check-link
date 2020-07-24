@@ -30,6 +30,8 @@ def extract_links(file):
                 )
     return found
 
+
+
 def get_down_links(file, links, __verbose, __exit):
     """
     Args: 
@@ -47,16 +49,18 @@ def get_down_links(file, links, __verbose, __exit):
 
             if r.status_code != 200:
                 
-                # Check for redirected url for the user to change to redirected url in md file
-                if check_history(r,__verbose)[0]:
-                    __verbose and print("At line", l[0] , ":" , l[1][2], ":", "Url is redirected to:", check_history(r,__verbose)[1])
-
-
-                # If test_https return true, we alert the user that the link is not down and need an update, else add to "down" list 
+                # CHECK - If test_https return true, we alert the user that the link is not down and need an update, else add to "down" list 
                 if r.status_code == 301 and test_https(l[1][2], __verbose):
-                    __verbose and print("At line", l[0] , ":" , l[1][2], ":", "The site just switched for HTTPS.")
+                    __verbose and print("At line", l[0] , ":" , l[1][2], ":", "The site just switched for HTTPS.", r.reason, "(", r.status_code, ")")
                     continue # Do not add the link to down list
+
+                # CHECK - Check for redirected url for the user to change to redirected url in md file
+                isRedirected, urlString = check_history(r,l,__verbose)
+                if isRedirected:
+                    __verbose and print("At line", l[0] , ":" , l[1][2], ":", "Url is redirected to:", urlString, r.reason, "(", r.status_code, ")")
+                    continue
                 
+                # Append the rest 
                 down.append(
                     (
                         l[0],
@@ -66,6 +70,7 @@ def get_down_links(file, links, __verbose, __exit):
                 __verbose and print("At line", l[0] , ":" , l[1][2], ":", r.reason, "(", r.status_code, ")")
                 if __exit:
                     r.raise_for_status()
+        
         except requests.exceptions.ConnectionError:
             print("At line", l[0], ":", "Connection to :", l[1][2], "reach Timeout.", "Request Timeout ( 408 )")
             down.append(
@@ -79,12 +84,23 @@ def get_down_links(file, links, __verbose, __exit):
 
     return down
 
-def check_history(response, __verbose):
+def check_history(response,link, __verbose):
+    """Check link redirection
+
+    Args: 
+        reponse () : Response from request.head()
+        link (string) : current link to be processed
+        __verbose : amount of verbosity for cli
+
+    Returns:
+        (bool,string). Return (True, redirectionURL) if the url is redirected. Else return (False, "")
+
+    """
     try:
         redirect_url = response.headers['Location']
         return (True, redirect_url)
     except KeyError:
-        __verbose and print("No redirection performed")
+        __verbose and print("At line", link[0] , ":" , link[1][2], ":", "No redirection performed")
         return (False, "")
 
 
