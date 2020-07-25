@@ -1,6 +1,7 @@
 import re 
 import os
 import requests
+from ping3 import ping
 
 
 def extract_links(file):
@@ -58,7 +59,15 @@ def get_down_links(file, links, __verbose, __exit):
                 isRedirected, urlString = check_history(r,l,__verbose)
                 if isRedirected:
                     __verbose and print("At line", l[0] , ":" , l[1][2], ":", "Url is redirected to:", urlString, r.reason, "(", r.status_code, ")")
-                    continue
+                    continue # Do not add the link to down list
+            
+                if r.status_code == 406:
+                    if check_not_acceptable_up(r,l,__verbose):
+                        continue
+
+
+                    
+                
                 
                 # Append the rest 
                 down.append(
@@ -84,6 +93,28 @@ def get_down_links(file, links, __verbose, __exit):
 
     return down
 
+
+def check_not_acceptable_up(r,link, __verbose):
+    
+    clean_link = link[1][2].split("://")[-1]
+        
+    try : # TODO -> USE tldrextract to sanitize url
+        p = ping(clean_link)
+
+        if p == False:
+            __verbose and print("At line", link[0] , ":" , link[1][2], ":", "The site returned", r.reason, "(", r.status_code, ")", "and is DOWN.")
+            return False
+        elif p == None:
+            __verbose and print("At line", link[0] , ":" , link[1][2], ":", "The site returned", r.reason, "(", r.status_code, ")", "Need to check Manually.")
+            return False
+        else:
+            __verbose and print("At line", link[0] , ":" , link[1][2], ":", "The site returned", r.reason, "(", r.status_code, ")", " but is UP.")
+            return True
+    except UnicodeError:
+        print("URL too long and not formated for ping")
+        return False 
+
+
 def check_history(response,link, __verbose):
     """Check link redirection
 
@@ -102,7 +133,6 @@ def check_history(response,link, __verbose):
     except KeyError:
         __verbose and print("At line", link[0] , ":" , link[1][2], ":", "No redirection performed")
         return (False, "")
-
 
 def test_https(link, __verbose):
     """
