@@ -26,7 +26,7 @@ python3 -m pip  install --upgrade awesome-check-link
 ### CLI 
 
 ```sh
-$ paclinks --help  
+$ aclinks --help  
 Awesome Check Links 
 
 Usage:
